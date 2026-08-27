@@ -1,3 +1,5 @@
+import org.gradle.api.publish.PublishingExtension
+
 plugins {
     base
     alias(libs.plugins.mavenPublish) apply false
@@ -82,4 +84,21 @@ tasks.register<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>("detektAllB
         "**/testDefaults/**/*.kt",
         "**/testCustomEntitlementComputation/**/*.kt",
     )
+}
+
+subprojects {
+    pluginManager.withPlugin("maven-publish") {
+        extensions.configure<PublishingExtension> {
+            repositories {
+                maven {
+                    name = "GitHubPackages"
+                    url = uri("https://maven.pkg.github.com/yepngo/purchases-android")
+                    credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+                }
+            }
+        }
+    }
 }
